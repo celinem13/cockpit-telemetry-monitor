@@ -8,22 +8,34 @@ struct TelemetryReading {
     double fuelPercent;
 };
 
-void displayWarnings(
+struct WarningStatus {
+    bool engineTemperatureHigh;
+    bool fuelLow;
+};
+
+WarningStatus evaluateWarnings(
     const TelemetryReading& reading,
     double highEngineTemperatureCelsius,
     double lowFuelPercent
 ) {
+    return {
+        reading.engineTemperatureCelsius >=
+            highEngineTemperatureCelsius,
+        reading.fuelPercent <= lowFuelPercent
+    };
+}
+
+void displayWarnings(const WarningStatus& warnings) {
     std::cout << "\nWarnings:\n";
 
     bool hasWarning = false;
 
-    if (reading.engineTemperatureCelsius >=
-        highEngineTemperatureCelsius) {
+    if (warnings.engineTemperatureHigh) {
         std::cout << "- Engine temperature is too high!\n";
         hasWarning = true;
     }
 
-    if (reading.fuelPercent <= lowFuelPercent) {
+    if (warnings.fuelLow) {
         std::cout << "- Fuel level is too low!\n";
         hasWarning = true;
     }
@@ -45,6 +57,12 @@ int main() {
     const double highEngineTemperatureCelsius = 105.0;
     const double lowFuelPercent = 20.0;
 
+    const WarningStatus warnings = evaluateWarnings(
+        reading,
+        highEngineTemperatureCelsius,
+        lowFuelPercent
+    );
+
     std::cout << "Cockpit Telemetry Monitor\n";
     std::cout << "---------------------------\n";
     std::cout << "Airspeed: "
@@ -58,11 +76,7 @@ int main() {
     std::cout << "Fuel: "
               << reading.fuelPercent << "%\n";
 
-    displayWarnings(
-        reading,
-        highEngineTemperatureCelsius,
-        lowFuelPercent
-    );
+    displayWarnings(warnings);
 
     return 0;
 }
