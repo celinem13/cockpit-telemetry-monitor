@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(CockpitTelemetryMonitor LANGUAGES CXX)
 
+include(CTest)
+
 add_library(
     telemetry_core
     telemetry.cpp
@@ -45,3 +47,31 @@ target_compile_options(
     -Wextra
     -Wpedantic
 )
+
+include(CTest)
+
+if(BUILD_TESTING)
+    add_executable(
+        telemetry_tests
+        tests/telemetry_tests.cpp
+    )
+
+    target_link_libraries(
+        telemetry_tests
+        PRIVATE
+        telemetry_core
+    )
+
+    target_compile_options(
+        telemetry_tests
+        PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+    )
+
+    add_test(
+        NAME telemetry_warning_tests
+        COMMAND telemetry_tests
+    )
+endif()
