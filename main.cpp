@@ -1,29 +1,6 @@
+#include "telemetry.h"
+
 #include <iostream>
-
-struct TelemetryReading {
-    double airspeedKnots;
-    double altitudeFeet;
-    double headingDegrees;
-    double engineTemperatureCelsius;
-    double fuelPercent;
-};
-
-struct WarningStatus {
-    bool engineTemperatureHigh;
-    bool fuelLow;
-};
-
-WarningStatus evaluateWarnings(
-    const TelemetryReading& reading,
-    double highEngineTemperatureCelsius,
-    double lowFuelPercent
-) {
-    return {
-        reading.engineTemperatureCelsius >=
-            highEngineTemperatureCelsius,
-        reading.fuelPercent <= lowFuelPercent
-    };
-}
 
 void displayWarnings(const WarningStatus& warnings) {
     std::cout << "\nWarnings:\n";
