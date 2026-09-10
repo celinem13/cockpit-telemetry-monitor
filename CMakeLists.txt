@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(CockpitTelemetryMonitor LANGUAGES CXX)
 
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
 include(CTest)
 
 add_library(
@@ -42,6 +44,32 @@ target_link_libraries(
 
 target_compile_options(
     telemetry_monitor
+    PRIVATE
+    -Wall
+    -Wextra
+    -Wpedantic
+)
+
+add_executable(
+    telemetry_dashboard
+    dashboard_main.cpp
+)
+
+target_link_libraries(
+    telemetry_dashboard
+    PRIVATE
+    telemetry_core
+    Qt6::Widgets
+)
+
+target_compile_features(
+    telemetry_dashboard
+    PRIVATE
+    cxx_std_17
+)
+
+target_compile_options(
+    telemetry_dashboard
     PRIVATE
     -Wall
     -Wextra
