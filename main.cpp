@@ -1,9 +1,24 @@
 #include "telemetry.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
+
+void displayTelemetry(const TelemetryReading& reading) {
+    std::cout << "Airspeed: "
+              << reading.airspeedKnots << " knots\n";
+    std::cout << "Altitude: "
+              << reading.altitudeFeet << " feet\n";
+    std::cout << "Heading: "
+              << reading.headingDegrees << " degrees\n";
+    std::cout << "Engine temperature: "
+              << reading.engineTemperatureCelsius << " C\n";
+    std::cout << "Fuel: "
+              << reading.fuelPercent << "%\n";
+}
 
 void displayWarnings(const WarningStatus& warnings) {
-    std::cout << "\nWarnings:\n";
+    std::cout << "Warnings:\n";
 
     bool hasWarning = false;
 
@@ -23,37 +38,40 @@ void displayWarnings(const WarningStatus& warnings) {
 }
 
 int main() {
-    const TelemetryReading reading{
-        430.0,
-        12000.0,
-        90.0,
-        108.0,
-        16.0
-    };
+    constexpr double highEngineTemperatureCelsius = 105.0;
+    constexpr double lowFuelPercent = 20.0;
+    constexpr int numberOfUpdates = 10;
 
-    const double highEngineTemperatureCelsius = 105.0;
-    const double lowFuelPercent = 20.0;
-
-    const WarningStatus warnings = evaluateWarnings(
-        reading,
-        highEngineTemperatureCelsius,
-        lowFuelPercent
-    );
+    TelemetrySimulator simulator;
 
     std::cout << "Cockpit Telemetry Monitor\n";
-    std::cout << "---------------------------\n";
-    std::cout << "Airspeed: "
-              << reading.airspeedKnots << " knots\n";
-    std::cout << "Altitude: "
-              << reading.altitudeFeet << " feet\n";
-    std::cout << "Heading: "
-              << reading.headingDegrees << " degrees\n";
-    std::cout << "Engine temperature: "
-              << reading.engineTemperatureCelsius << " C\n";
-    std::cout << "Fuel: "
-              << reading.fuelPercent << "%\n";
+    std::cout << "===========================\n";
 
-    displayWarnings(warnings);
+    for (int update = 1; update <= numberOfUpdates; ++update) {
+        const TelemetryReading reading = simulator.nextReading();
+
+        const WarningStatus warnings = evaluateWarnings(
+            reading,
+            highEngineTemperatureCelsius,
+            lowFuelPercent
+        );
+
+        std::cout << "\nUpdate "
+                  << update
+                  << " of "
+                  << numberOfUpdates
+                  << "\n";
+        std::cout << "---------------------------\n";
+
+        displayTelemetry(reading);
+        displayWarnings(warnings);
+
+        if (update < numberOfUpdates) {
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(500)
+            );
+        }
+    }
 
     return 0;
 }

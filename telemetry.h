@@ -14,6 +14,14 @@ struct WarningStatus {
     bool fuelLow;
 };
 
+class TelemetrySimulator {
+public:
+    TelemetryReading nextReading();
+
+private:
+    int simulationStep{0};
+};
+
 WarningStatus evaluateWarnings(
     const TelemetryReading& reading,
     double highEngineTemperatureCelsius,

@@ -48,8 +48,6 @@ target_compile_options(
     -Wpedantic
 )
 
-include(CTest)
-
 if(BUILD_TESTING)
     add_executable(
         telemetry_tests
